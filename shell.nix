@@ -20,28 +20,39 @@ let
 
   # Common build inputs
   buildInputs = with pkgs; [
-    # Tauri prerequisites
+    # Tauri prerequisites (Linux-specific)
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     webkitgtk_4_1
     gtk3
     cairo
     gdk-pixbuf
     glib
     dbus
-    openssl
     librsvg
     libayatana-appindicator
     xdotool
-
+  ] ++ (with pkgs; [
+    # Common dependencies (cross-platform)
+    openssl
+    
     # ClamAV dependencies
     bzip2
     curl
     json_c
-    libmilter
     ncurses
     pcre2
     libxml2
     zlib
-  ];
+  ]) ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+    # Linux-specific ClamAV dependency
+    libmilter
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+    # macOS frameworks for Tauri
+    AppKit
+    WebKit
+    CoreServices
+    Security
+  ]);
 
   nativeBuildInputs = with pkgs; [
     # Build tools
@@ -67,7 +78,7 @@ let
     git
   ];
 
-  runtimeDependencies = with pkgs; [
+  runtimeDependencies = pkgs.lib.optionals pkgs.stdenv.isLinux (with pkgs; [
     webkitgtk_4_1
     gtk3
     cairo
@@ -77,7 +88,11 @@ let
     openssl
     librsvg
     libayatana-appindicator
-  ];
+  ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+    AppKit
+    WebKit
+    CoreServices
+  ]);
 
 in pkgs.mkShell {
   buildInputs = buildInputs ++ nativeBuildInputs;
@@ -103,9 +118,15 @@ in pkgs.mkShell {
     echo ""
     
     # Set up environment variables for building
-    export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.webkitgtk_4_1}/lib/pkgconfig:$PKG_CONFIG_PATH"
-    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDependencies}:$LD_LIBRARY_PATH"
-    export WEBKIT_DISABLE_COMPOSITING_MODE=1
+    export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+    ${pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+      export PKG_CONFIG_PATH="${pkgs.webkitgtk_4_1}/lib/pkgconfig:$PKG_CONFIG_PATH"
+      export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDependencies}:$LD_LIBRARY_PATH"
+      export WEBKIT_DISABLE_COMPOSITING_MODE=1
+    ''}
+    ${pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+      export DYLD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDependencies}:$DYLD_LIBRARY_PATH"
+    ''}
   '';
 
   # Environment variables for Rust compilation

@@ -128,11 +128,22 @@ The environment sets `WEBKIT_DISABLE_COMPOSITING_MODE=1` to help with WebKit com
 
 ## Platform Support
 
-Currently tested on:
-- Linux (x86_64)
-- NixOS
+Currently tested and supported on:
+- **Linux (x86_64)** - Full support with GTK/WebKitGTK
+- **macOS (Intel & Apple Silicon)** - Full support with native frameworks
+- **NixOS** - Native support
 
-macOS support is available but may require additional configuration for the Tauri prerequisites.
+### Platform-Specific Notes
+
+**Linux:**
+- Uses WebKitGTK 4.1, GTK3, and related Linux libraries
+- Sets `WEBKIT_DISABLE_COMPOSITING_MODE=1` for compatibility
+- Uses `LD_LIBRARY_PATH` for runtime library loading
+
+**macOS:**
+- Uses native macOS frameworks (AppKit, WebKit, CoreServices, Security)
+- Uses `DYLD_LIBRARY_PATH` for runtime library loading
+- Compatible with both Intel and Apple Silicon Macs
 
 ## Contributing
 
