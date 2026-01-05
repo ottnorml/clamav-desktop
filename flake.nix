@@ -59,9 +59,8 @@
           python3
           python3Packages.pytest
           
-          # Rust toolchain
+          # Rust toolchain (includes cargo and rust-analyzer)
           rustToolchain
-          cargo
           
           # Node.js and package manager
           nodejs
@@ -94,7 +93,6 @@
             pkgs.cargo-watch
             pkgs.cargo-edit
             pkgs.cargo-deb
-            pkgs.rust-analyzer
           ];
 
           shellHook = ''

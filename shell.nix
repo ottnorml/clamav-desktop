@@ -51,9 +51,8 @@ let
     python3
     python3Packages.pytest
     
-    # Rust toolchain
+    # Rust toolchain (includes cargo and rust-analyzer)
     rustToolchain
-    cargo
     
     # Node.js and package manager
     nodejs
@@ -63,7 +62,6 @@ let
     cargo-watch
     cargo-edit
     cargo-deb
-    rust-analyzer
     
     # Additional tools
     git
