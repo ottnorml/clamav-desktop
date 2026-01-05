@@ -89,7 +89,6 @@
           gdk-pixbuf
           glib
           dbus
-          openssl
           librsvg
           libayatana-appindicator
         ]) ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
