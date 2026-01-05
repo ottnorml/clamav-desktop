@@ -179,6 +179,9 @@ Cargo.lock
 ########################################
 # Custom
 
+# Nix direnv
+.direnv
+
 # Custom Cargo config
 **/.cargo/config.toml
 
