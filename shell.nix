@@ -45,12 +45,12 @@ let
 
     # Linux-specific ClamAV dependency
     libmilter
-  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs.darwin; [
-    # macOS frameworks for Tauri
-    apple_sdk.frameworks.AppKit
-    apple_sdk.frameworks.WebKit
-    apple_sdk.frameworks.CoreServices
-    apple_sdk.frameworks.Security
+  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
+    # macOS frameworks for Tauri (using direct framework references)
+    darwin.AppKit
+    darwin.WebKit
+    darwin.CoreServices
+    darwin.Security
   ]);
 
   nativeBuildInputs = with pkgs; [
@@ -86,11 +86,11 @@ let
     dbus
     librsvg
     libayatana-appindicator
-  ]) ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs.darwin; [
-    apple_sdk.frameworks.AppKit
-    apple_sdk.frameworks.WebKit
-    apple_sdk.frameworks.CoreServices
-    apple_sdk.frameworks.Security
+  ]) ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
+    darwin.AppKit
+    darwin.WebKit
+    darwin.CoreServices
+    darwin.Security
   ]);
 
 in pkgs.mkShell {
