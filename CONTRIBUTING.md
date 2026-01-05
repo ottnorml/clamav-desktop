@@ -53,6 +53,34 @@ installation.
 
 ## Getting started
 
+### Setup Options
+
+You have two options to set up your development environment:
+
+#### Option 1: Using Nix (Recommended)
+
+If you have [Nix](https://nixos.org/download.html) installed, you can use the provided Nix flake or shell configuration:
+
+**With Flakes (recommended):**
+```sh
+nix develop
+```
+
+**Without Flakes:**
+```sh
+nix-shell
+```
+
+**With direnv (automatic):**
+If you have [direnv](https://direnv.net/) installed:
+```sh
+direnv allow
+```
+
+The Nix environment provides all required dependencies including Node.js v22, Yarn, Rust toolchain, Tauri prerequisites, ClamAV dependencies, and optional development tools.
+
+#### Option 2: Manual Setup
+
 ### Mandatory Requirements
 
 - [Node.js v22](https://nodejs.org) or [nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
