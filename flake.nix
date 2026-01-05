@@ -135,8 +135,7 @@
 
           src = ./.;
 
-          nativeBuildInputs = nativeBuildInputs;
-          buildInputs = buildInputs;
+          inherit nativeBuildInputs buildInputs;
 
           configurePhase = ''
             export HOME=$TMPDIR
