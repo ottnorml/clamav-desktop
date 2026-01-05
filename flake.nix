@@ -28,8 +28,19 @@
 
         # Common build inputs for the application
         buildInputs = with pkgs; [
+          # Common dependencies (cross-platform)
+          openssl
+
+          # ClamAV dependencies
+          bzip2
+          curl
+          json_c
+          ncurses
+          pcre2
+          libxml2
+          zlib
+        ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
           # Tauri prerequisites (Linux-specific)
-        ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           webkitgtk_4_1
           gtk3
           cairo
@@ -39,22 +50,10 @@
           librsvg
           libayatana-appindicator
           xdotool
-        ] ++ (with pkgs; [
-          # Common dependencies (cross-platform)
-          openssl
-          
-          # ClamAV dependencies
-          bzip2
-          curl
-          json_c
-          ncurses
-          pcre2
-          libxml2
-          zlib
-        ]) ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+
           # Linux-specific ClamAV dependency
           libmilter
-        ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+        ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
           # macOS frameworks for Tauri
           AppKit
           WebKit
@@ -83,7 +82,7 @@
         ];
 
         # Libraries needed at runtime
-        runtimeDependencies = pkgs.lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+        runtimeDependencies = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
           webkitgtk_4_1
           gtk3
           cairo
@@ -93,7 +92,7 @@
           openssl
           librsvg
           libayatana-appindicator
-        ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+        ]) ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
           AppKit
           WebKit
           CoreServices
@@ -132,12 +131,12 @@
             
             # Set up environment variables for building
             export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
-            ${pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+            ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
               export PKG_CONFIG_PATH="${pkgs.webkitgtk_4_1}/lib/pkgconfig:$PKG_CONFIG_PATH"
               export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDependencies}:$LD_LIBRARY_PATH"
               export WEBKIT_DISABLE_COMPOSITING_MODE=1
             ''}
-            ${pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+            ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
               export DYLD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDependencies}:$DYLD_LIBRARY_PATH"
             ''}
           '';
@@ -185,11 +184,11 @@
             cp src-tauri/target/release/clamav-desktop $out/bin/
             
             # Wrap the binary with necessary library paths
-            ${pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+            ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
               wrapProgram $out/bin/clamav-desktop \
                 --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeDependencies}"
             ''}
-            ${pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+            ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
               wrapProgram $out/bin/clamav-desktop \
                 --prefix DYLD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeDependencies}"
             ''}
